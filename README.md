@@ -1,4 +1,4 @@
-# XLS to XLSM
+# Convert to modern XLSM format
 
 A template repository that converts legacy `.xls` files and re-saves older `.xlsm` files as macro-enabled `.xlsm` workbooks using a GitHub Actions workflow and a PowerShell script powered by Excel COM automation.
 
