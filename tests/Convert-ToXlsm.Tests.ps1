@@ -8,7 +8,7 @@ $pwsh = (Get-Process -Id $PID).Path
 
 try {
     New-Item -ItemType Directory -Path "$scriptDir/utils", $inputDir, $outputDir -Force | Out-Null
-    Copy-Item "$PSScriptRoot/../scripts/Convert-XlsToXlsm.ps1" $scriptDir
+    Copy-Item "$PSScriptRoot/../scripts/Convert-ToXlsm.ps1" $scriptDir
     Set-Content -Path "$scriptDir/utils/Screenshot.ps1" -Value 'function Take-Screenshot { param($OutputPath) }'
     @'
 param($ScriptPath, $InputDir, $OutputDir, $LogPath)
@@ -28,7 +28,7 @@ if ($null -ne $LASTEXITCODE) { exit $LASTEXITCODE }
     function Invoke-Conversion {
         param($Destination = $outputDir)
         $output = & $pwsh -NoProfile -File "$testRoot/run.ps1" `
-            -ScriptPath "$scriptDir/Convert-XlsToXlsm.ps1" `
+            -ScriptPath "$scriptDir/Convert-ToXlsm.ps1" `
             -InputDir $inputDir -OutputDir $Destination -LogPath $logPath 2>&1
         [pscustomobject]@{ ExitCode = $LASTEXITCODE; Output = $output }
     }

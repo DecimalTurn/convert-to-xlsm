@@ -19,11 +19,11 @@ Input files must have distinct names without their extensions: for example, `boo
 | File | Description |
 |------|-------------|
 | `input/` | Place your `.xls` and `.xlsm` files here |
-| `scripts/Convert-XlsToXlsm.ps1` | PowerShell script that opens each workbook via Excel COM and saves it as `.xlsm` |
+| `scripts/Convert-ToXlsm.ps1` | PowerShell script that opens each workbook via Excel COM and saves it as `.xlsm` |
 | `.github/workflows/Convert.yml` | GitHub Actions workflow that sets up Excel, runs the conversion script, and uploads the results |
 
 The conversion script accepts optional input and output directories:
 
 ```powershell
-./scripts/Convert-XlsToXlsm.ps1 -InputDir "./input" -OutputDir "./output"
+./scripts/Convert-ToXlsm.ps1 -InputDir "./input" -OutputDir "./output"
 ```
