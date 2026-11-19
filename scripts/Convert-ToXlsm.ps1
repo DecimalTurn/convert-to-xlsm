@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS
-    Converts .xls files in the input directory to .xlsm format.
+    Converts .xls and .xlsm files in the input directory to .xlsm format.
 
 .DESCRIPTION
-    Opens each .xls file found in the specified input directory using the
-    Excel COM object, then saves it as a macro-enabled workbook (.xlsm) in
-    the specified output directory.
+    Opens each .xls or .xlsm file found in the specified input directory using
+    the Excel COM object, then saves it as a macro-enabled workbook (.xlsm)
+    in the specified output directory.
 
 .PARAMETER InputDir
-    Path to the directory containing .xls files to convert.
+    Path to the directory containing .xls or .xlsm files to convert.
     Defaults to ".\input".
 
 .PARAMETER OutputDir
@@ -39,17 +39,38 @@ New-Item -ItemType Directory -Force -Path $screenshotDir | Out-Null
 $scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 . "$scriptPath/utils/Screenshot.ps1"
 
-$xlsFiles = Get-ChildItem -Path $InputDir -Filter "*.xls"
+$workbookFiles = @(Get-ChildItem -LiteralPath $InputDir -File |
+    Where-Object { $_.Extension -in '.xls', '.xlsm' })
 
-if ($xlsFiles.Count -eq 0) {
-    Write-Host "No .xls files found in $InputDir"
+if ($workbookFiles.Count -eq 0) {
+    Write-Host "No .xls or .xlsm files found in $InputDir"
     exit 0
+}
+
+# Check all destinations before starting so no input or converted file is overwritten.
+$outputNames = @{}
+$inputPaths = @{}
+foreach ($file in $workbookFiles) {
+    $inputPaths[$file.FullName] = $true
+}
+foreach ($file in $workbookFiles) {
+    $outputFileName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name) + ".xlsm"
+    $outputPath = Join-Path $OutputDir $outputFileName
+    if ($outputNames.ContainsKey($outputFileName)) {
+        Write-Error "Multiple input files would be saved as '$outputFileName'. Rename one of them before converting."
+        exit 1
+    }
+    if ($inputPaths.ContainsKey($outputPath)) {
+        Write-Error "Output '$outputPath' would overwrite an input file. Use a different output directory."
+        exit 1
+    }
+    $outputNames[$outputFileName] = $true
 }
 
 # xlOpenXMLWorkbookMacroEnabled = 52
 $xlFormatXlsm = 52
 
-foreach ($file in $xlsFiles) {
+foreach ($file in $workbookFiles) {
     Write-Host "Converting: $($file.Name)"
     $fileNameNoExt = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
     $outputFileName = $fileNameNoExt + ".xlsm"
