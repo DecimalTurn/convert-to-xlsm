@@ -1,4 +1,4 @@
-name: XLS to XLSM
+name: Convert to modern XLSM
 
 on:
   workflow_dispatch:
@@ -17,7 +17,7 @@ jobs:
         with:
           office-apps: "Excel"
           install-office: "true"
-      - name: "Convert XLS to XLSM"
+      - name: "Convert to XLSM"
         shell: pwsh
         run: |
           ./scripts/Convert-ToXlsm.ps1 -InputDir "./input" -OutputDir "./output"
